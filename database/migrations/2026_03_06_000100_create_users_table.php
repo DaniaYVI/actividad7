@@ -11,12 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
+
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // CAMPOS NUEVOS
+            $table->enum('role', ['student', 'teacher', 'admin']);
+            $table->unsignedBigInteger('group_id')->nullable();
+
+            // RELACIÓN CON GROUPS
+            $table->foreign('group_id')
+                  ->references('id')
+                  ->on('groups')
+                  ->onDelete('set null');
+
             $table->rememberToken();
             $table->timestamps();
         });
@@ -42,8 +54,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };
